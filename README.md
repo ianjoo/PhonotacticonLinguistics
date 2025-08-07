@@ -1,0 +1,1 @@
+PhonoDist.csv contains the phonological distances between Eurasian lects calculated based on Phonotacticon 1.0. PhonotacticonLinguistics.rmd is the R Markdown file using for calculating those distances.
