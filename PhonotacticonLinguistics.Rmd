@@ -1,21 +1,8 @@
 ---
 title: "R Markdown script used for ``Phonological distances between Eurasian lects measured
 via Phonotacticon 1.0 reveal areal patterns''"
-date: "23 June 2025"
+date: "7 August 2025"
 author: "Ian Joo and Yu-Yin Hsu"
-output:
-  pdf_document: 
-    latex_engine: xelatex
-  html_document:
-    df_print: paged
-header-includes:
-- \pagenumbering{gobble}
-- \usepackage{fontspec}
-- \setmainfont{Times New Roman}
-- \setmonofont{Arial Unicode MS}
-fontsize: 12pt
-geometry: 'margin = 2.5cm'
-papersize: a4
 ---
 
 # Data
@@ -63,6 +50,7 @@ library(parallelDist)
 library(cluster)
 library(ggdendro)
 library(ggrepel)
+library(htmlwidgets)
 ```
 
 Load Phonotacticon.
@@ -861,51 +849,32 @@ PhonoK4
 
 # Multidimensional scaling
 
-Perform multidimensional scaling (k = 2) based on the phonological distances, while grouping the lects into Eastern, Central, and Western Eurasia.
+Perform multidimensional scaling (k = 3) based on the phonological distances.
 
 ```{r}
-PhonoMDS <- cmdscale(PhonoDistNumbers) %>% 
+PhonoMDS <- cmdscale(PhonoDistNumbers, k = 3) %>% 
   as.data.table() %>% 
   mutate(Lect = Eurasia$Lect) %>% 
   left_join(Phonotacticon) %>% 
-  mutate(Area = ifelse(lon < 60 & lon > -20,
-                       'West',
-                       ifelse(lon > 90 | lon < -160,
-                       'East', 'Central'   
-                       ))) %>% 
-  select(Lect, Family, V1, V2, Area) %>% 
-  mutate(Area = factor(Area, levels = c('West', 'Central', 'East')))
+  select(Lect, Family, V1, V2, V3, lon, lat)
 
 PhonoMDS
 ```
 
-Visualization of multidimensional scaling.
+Create a 3D scatterplot of the multidimensional scaling.
 ```{r}
-PhonoMDSggplot <- 
-  ggplot(aes(x = V2, y = V1, shape = Area, color = Area, label = Lect),
-         data = PhonoMDS) +
-  geom_point() +
-  geom_text_repel(min.segment.length = 0,
-                  max.overlaps = 10,
-                  force = 5,
-                  size = 3,
-                  show.legend = FALSE) +
-  scale_shape_manual(values = 0:2,
-                     labels = c('Western (west of the Ural Mountains, defined as 60°E)',
-                                'Central (60-90°E)',
-                                'Eastern (east of the Eastern Himalayas, defined as 90°E)')) +
-  theme_classic() +
-  guides(color = guide_legend(nrow = 3)) +
-  theme(legend.position = 'bottom') +
-  coord_fixed() +
-  guides(color = guide_legend(direction = "vertical"),
-         shape = guide_legend(direction = "vertical")) +
-  scale_color_manual(values = c('red', 'purple', 'blue'),
-                     labels = c('Western (west of the Ural Mountains, defined as 60°E)',
-                                'Central (60-90°E)',
-                                'Eastern (east of the Eastern Himalayas, defined as 90°E)'))
+PhonoMDSplot <- plot_ly(
+  data = PhonoMDS,
+  x = ~V1,
+  y = ~V2,
+  z = ~V3,
+  text = ~Lect,
+  color = ~Family,
+  type = 'scatter3d',
+  mode = 'text'
+)
 
-PhonoMDSggplot
+PhonoMDSplot
 ```
 
 
