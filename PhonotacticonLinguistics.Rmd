@@ -1,6 +1,5 @@
 ---
-title: "R Markdown script used for ``Phonological distances between Eurasian lects measured
-via Phonotacticon 1.0 reveal areal patterns''"
+title: "R Markdown script used for ``Phonological distances between Eurasian lects measured via Phonotacticon 1.0 reveal areal patterns''"
 date: "7 August 2025"
 author: "Ian Joo and Yu-Yin Hsu"
 ---
